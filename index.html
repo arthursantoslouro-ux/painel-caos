@@ -2,22 +2,39 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Painel do Caos 😈</title>
+<title>Painel Completo</title>
+<style>
+body{
+  background:#111;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+  padding:40px;
+}
+input, button{
+  padding:10px;
+  margin:10px;
+}
+</style>
 </head>
-<body style="background:black;color:lime;font-family:monospace;padding:20px">
+<body>
 
-<h2>Painel do Caos 😈</h2>
+<h1>🎙 Painel de Controle</h1>
 
-<h3>👥 Conectados:</h3>
-<ul id="lista"></ul>
+<h3>Abrir URL</h3>
+<input type="text" id="url" placeholder="Cole o link aqui" size="40">
+<br>
+<button onclick="abrirUrl()">Abrir URL</button>
 
 <hr>
 
-<input id="link" placeholder="Cole o link aqui" style="width:100%;padding:10px">
-<br><br>
-<button onclick="enviar()" style="padding:10px;width:100%">
-Mandar abrir
-</button>
+<h3>Text-to-Speech</h3>
+<input type="text" id="texto" placeholder="Digite o que será falado" size="40">
+<br>
+<label>Volume:</label>
+<input type="range" id="volume" min="0" max="1" step="0.1" value="1">
+<br>
+<button onclick="falar()">Falar</button>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -31,27 +48,32 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// LISTA CONECTADOS
-db.ref("conectados").on("value", snap => {
-  const lista = document.getElementById("lista");
-  lista.innerHTML = "";
+function abrirUrl(){
+  const url = document.getElementById("url").value.trim();
+  if(!url) return;
 
-  const dados = snap.val();
-  if (!dados) {
-    lista.innerHTML = "<li>Ninguém conectado</li>";
-    return;
+  let finalUrl = url;
+  if(!finalUrl.startsWith("http://") && !finalUrl.startsWith("https://")){
+    finalUrl = "https://" + finalUrl;
   }
 
-  Object.keys(dados).forEach(id => {
-    const li = document.createElement("li");
-    li.textContent = id;
-    lista.appendChild(li);
+  db.ref("comando").set({
+    tipo: "abrir",
+    url: finalUrl
   });
-});
+}
 
-function enviar() {
-  const url = document.getElementById("link").value;
-  db.ref("comando").set(url);
+function falar(){
+  const texto = document.getElementById("texto").value;
+  const volume = parseFloat(document.getElementById("volume").value);
+
+  if(!texto) return;
+
+  db.ref("comando").set({
+    tipo: "tts",
+    texto: texto,
+    volume: volume
+  });
 }
 </script>
 
