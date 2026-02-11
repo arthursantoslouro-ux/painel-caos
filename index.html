@@ -2,49 +2,24 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Painel Completo</title>
-<style>
-body{
-  background:#111;
-  color:white;
-  font-family:Arial;
-  text-align:center;
-  padding:40px;
-}
-input, button{
-  padding:10px;
-  margin:10px;
-}
-ul{
-  text-align:left;
-  display:inline-block;
-  padding-left:20px;
-}
-</style>
+<title>Painel Controle</title>
 </head>
 <body>
+<h1>Painel Controle</h1>
 
-<h1>🎙 Painel de Controle</h1>
-
-<h3>Abrir URL</h3>
-<input type="text" id="url" placeholder="Cole o link aqui" size="40">
-<br>
-<button onclick="abrirUrl()">Abrir URL</button>
+<h3>Enviar URL</h3>
+<input type="text" id="url" placeholder="Digite o link aqui" size="40">
+<button onclick="enviarUrl()">Enviar URL</button>
 
 <hr>
 
-<h3>Text-to-Speech</h3>
-<input type="text" id="texto" placeholder="Digite o que será falado" size="40">
+<h3>Enviar TTS</h3>
+<input type="text" id="texto" placeholder="Digite o texto aqui" size="40">
 <br>
 <label>Volume:</label>
 <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
 <br>
-<button onclick="falar()">Falar</button>
-
-<hr>
-
-<h3>Conectados:</h3>
-<ul id="listaConectados"></ul>
+<button onclick="enviarTTS()">Enviar TTS</button>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -58,7 +33,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-function abrirUrl(){
+// Enviar URL
+function enviarUrl(){
   const url = document.getElementById("url").value.trim();
   if(!url) return;
 
@@ -71,12 +47,14 @@ function abrirUrl(){
     tipo: "abrir",
     url: finalUrl
   });
+
+  alert("URL enviada!");
 }
 
-function falar(){
-  const texto = document.getElementById("texto").value;
+// Enviar TTS
+function enviarTTS(){
+  const texto = document.getElementById("texto").value.trim();
   const volume = parseFloat(document.getElementById("volume").value);
-
   if(!texto) return;
 
   db.ref("comando").set({
@@ -84,19 +62,9 @@ function falar(){
     texto: texto,
     volume: volume
   });
+
+  alert("TTS enviado!");
 }
-
-// Lista de conectados
-const lista = document.getElementById("listaConectados");
-db.ref("conectados").on("value", snap => {
-  lista.innerHTML = "";
-  snap.forEach(userSnap => {
-    const li = document.createElement("li");
-    li.textContent = userSnap.key;
-    lista.appendChild(li);
-  });
-});
 </script>
-
 </body>
 </html>
