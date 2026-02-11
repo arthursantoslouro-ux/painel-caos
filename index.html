@@ -8,6 +8,11 @@
 
 <h2>Painel do Caos 😈</h2>
 
+<h3>👥 Conectados:</h3>
+<ul id="lista"></ul>
+
+<hr>
+
 <input id="link" placeholder="Cole o link aqui" style="width:100%;padding:10px">
 <br><br>
 <button onclick="enviar()" style="padding:10px;width:100%">
@@ -26,10 +31,27 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// LISTA CONECTADOS
+db.ref("conectados").on("value", snap => {
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
+
+  const dados = snap.val();
+  if (!dados) {
+    lista.innerHTML = "<li>Ninguém conectado</li>";
+    return;
+  }
+
+  Object.keys(dados).forEach(id => {
+    const li = document.createElement("li");
+    li.textContent = id;
+    lista.appendChild(li);
+  });
+});
+
 function enviar() {
   const url = document.getElementById("link").value;
   db.ref("comando").set(url);
-  alert("Comando enviado 😈");
 }
 </script>
 
