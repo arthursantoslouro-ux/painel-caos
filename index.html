@@ -11,6 +11,7 @@ li { padding:3px 0; }
 </style>
 </head>
 <body>
+
 <h1>Painel de Controle</h1>
 
 <h3>Enviar URL</h3>
@@ -26,28 +27,30 @@ li { padding:3px 0; }
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 const firebaseConfig = {
-  apiKey:"AIzaSyCCz1Z1pg95O0NER7_IRKoJ0mDqPgWaW-o",
-  databaseURL:"https://painel-caos-default-rtdb.firebaseio.com"
+  apiKey: "AIzaSyCCz1Z1pg95O0NER7_IRKoJ0mDqPgWaW-o",
+  databaseURL: "https://painel-caos-default-rtdb.firebaseio.com"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Envia URL para o bookmarklet
+// Função para enviar URL como STRING pura
 function enviarUrl(){
   let url = document.getElementById("url").value.trim();
   if(!url) return;
 
-  // Adiciona https:// se necessário
+  // Adiciona https:// se não tiver
   if(!url.startsWith("http://") && !url.startsWith("https://")){
     url = "https://" + url;
   }
 
+  // Envia apenas a string para o bookmarklet
   db.ref("comando").set(url);
+
   alert("URL enviada!");
 }
 
-// Lista de conectados
+// Lista de conectados em tempo real
 const lista = document.getElementById("listaConectados");
 db.ref("conectados").on("value", snap => {
   lista.innerHTML = "";
@@ -58,5 +61,6 @@ db.ref("conectados").on("value", snap => {
   });
 });
 </script>
+
 </body>
 </html>
