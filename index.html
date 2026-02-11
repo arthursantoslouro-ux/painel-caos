@@ -3,8 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <title>Painel Controle</title>
+<style>
+body { font-family: Arial; background: #111; color: #fff; padding: 20px; }
+input, button, label { margin: 5px; padding: 8px; }
+ul { list-style-type: none; padding-left: 0; }
+li { padding: 3px 0; }
+</style>
 </head>
 <body>
+
 <h1>Painel Controle</h1>
 
 <h3>Enviar URL</h3>
@@ -20,6 +27,11 @@
 <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
 <br>
 <button onclick="enviarTTS()">Enviar TTS</button>
+
+<hr>
+
+<h3>Conectados:</h3>
+<ul id="listaConectados"></ul>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -43,11 +55,7 @@ function enviarUrl(){
     finalUrl = "https://" + finalUrl;
   }
 
-  db.ref("comando").set({
-    tipo: "abrir",
-    url: finalUrl
-  });
-
+  db.ref("comando").set({ tipo: "abrir", url: finalUrl });
   alert("URL enviada!");
 }
 
@@ -57,14 +65,21 @@ function enviarTTS(){
   const volume = parseFloat(document.getElementById("volume").value);
   if(!texto) return;
 
-  db.ref("comando").set({
-    tipo: "tts",
-    texto: texto,
-    volume: volume
-  });
-
+  db.ref("comando").set({ tipo: "tts", texto: texto, volume: volume });
   alert("TTS enviado!");
 }
+
+// Lista de conectados
+const lista = document.getElementById("listaConectados");
+db.ref("conectados").on("value", snap => {
+  lista.innerHTML = "";
+  snap.forEach(userSnap => {
+    const li = document.createElement("li");
+    li.textContent = userSnap.key;
+    lista.appendChild(li);
+  });
+});
 </script>
+
 </body>
 </html>
